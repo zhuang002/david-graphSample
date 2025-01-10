@@ -22,6 +22,12 @@ public class Main {
 		} else {
 			System.out.println("The graph is not conected");
 		}
+		
+		if (graph1.isTree()) {
+			System.out.println("The graph is a tree");
+		} else {
+			System.out.println("The graph is not a tree");
+		}
 
 	}
 
@@ -32,6 +38,7 @@ class GraphArray {
 	int nodes = 0;
 	int paths = 0;
 	boolean direction = false;
+	int connected = -1; // -1 for unknown, 0 for disconnected, 1 for connected.
 
 	public void readBGFromScanner(Scanner sc) { // BG: bidirection
 		nodes = sc.nextInt();
@@ -52,17 +59,55 @@ class GraphArray {
 		
 	}
 
+	public boolean isTree() {
+		if (!this.isConnected()) return false;
+		
+		ArrayList<Integer> passedNodes = new ArrayList<>(); // the return list contains all passed nodes;
+		ArrayList<Integer> nextNodes = new ArrayList<>(); // the next connected nodes of a current node being processed.
+		ArrayList<Integer> tobeProcessed = new ArrayList<>(); // all the nodes we have not yet processed.
+		
+		tobeProcessed.add(0); // initialize the tobeProcess with the starting node.
+		
+		while (!tobeProcessed.isEmpty()) { // now start the loop when there is/are node(s)  to be processed.
+			int currentNode = tobeProcessed.get(0); // get the first node to be processed as current node.
+			// get all next nodes of current;
+			for (int i=0;i<this.nodes-1;i++) { // go through all nodes.
+				if (i == currentNode) continue; //  if the i is current node, it is not a to be processed node.
+				
+				if (this.map[currentNode][i]!=0 && i!=currentNode) { // if there is a path between currentNode and i, then i is a next node.
+					if (passedNodes.contains(i)) // if the i node has been passed previously, then there should be a ring.
+						return false;
+					if (tobeProcessed.contains(i)) // if the i node is in the tobe list, then there should be a ring.
+						return false;
+					nextNodes.add(i);
+				}
+			}
+			passedNodes.add(currentNode); // the current node has been processed and is passed.
+			tobeProcessed.remove(0); // remove the passed node from to be processed list.
+			tobeProcessed.addAll(nextNodes); // add all next nodes of current node to the tobeProcessed.
+			nextNodes.clear();
+		}
+		
+		return true; // if never meet previous node, then there is no ring.
+	}
+
 	public boolean isConnected() {
-		ArrayList<Integer> nodes = goThoughConnectedNodes(0); // get all the nodes that can be passed from node 0.
+		if (this.connected==1) return true;
+		if (this.connected==0) return false;
+		
+		ArrayList<Integer> nodes = goThoughConnectedNodesBFS(0); // get all the nodes that can be passed from node 0.
 		for (int i=0;i<this.nodes-1;i++) { // iterate all nodes.
 			if (!nodes.contains(i)) { // if there is a node that is not in nodes list, then it is disconnected graph.
+				this.connected = 0;
 				return false;
 			}
 		}
+		this.connected = 1;
 		return true; // all nodes can be passed from node 0.
 	}
 
-	private ArrayList<Integer> goThoughConnectedNodes(int start) {
+	// this is a BFS algorithm.
+	private ArrayList<Integer> goThoughConnectedNodesBFS(int start) {
 		ArrayList<Integer> passedNodes = new ArrayList<>(); // the return list contains all passed nodes;
 		ArrayList<Integer> nextNodes = new ArrayList<>(); // the next connected nodes of a current node being processed.
 		ArrayList<Integer> tobeProcessed = new ArrayList<>(); // all the nodes we have not yet processed.
