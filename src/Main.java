@@ -20,11 +20,11 @@ public class Main {
 		
 		/*GraphNodes graph2 = new GraphNodes();
 		graph2.readDGFromScanner(sc);
-		graph2.print();
+		graph2.printD();*/
 		
-		GraphNodes graph3 = new GraphNodes();
+		/*GraphNodes graph3 = new GraphNodes();
 		graph3.readBGLFromScanner(sc);
-		graph3.print();|
+		graph3.print();*/
 		
 		if (graph1.isConnected()) {
 			System.out.println("The graph is connected");
@@ -32,7 +32,7 @@ public class Main {
 			System.out.println("The graph is not conected");
 		}
 		
-		if (graph1.isTree()) {
+		/*if (graph1.isTree()) {
 			System.out.println("The graph is a tree");
 		} else {
 			System.out.println("The graph is not a tree");
@@ -296,6 +296,88 @@ class GraphNodes {
 			// connect the 2 nodes;
 			node1.addNeighbour(node2);
 			node2.addNeighbour(node1);
+		}
+		
+	}
+
+	public boolean isConnected() {
+		ArrayList<Node> passedNodes = new ArrayList<>();
+		goFromNodeBFS(this.nodes.get(0),passedNodes);
+		return passedNodes.size() == this.nodes.size();
+	}
+
+	private void goFromNodeBFS(Node node, ArrayList<Node> passedNodes) {
+		ArrayList<Node> tobeProcessed = new ArrayList<>();
+		tobeProcessed.add(node);
+		while (!tobeProcessed.isEmpty()) {
+			node = tobeProcessed.get(0);
+			tobeProcessed.remove(0);
+			for (Node n:node.connectedNodes) {
+				if (n == node) continue;
+				if (passedNodes.contains(n)) continue;
+				if (tobeProcessed.contains(n)) continue;
+				tobeProcessed.add(n);
+			}
+			passedNodes.add(node);
+		}
+		
+	}
+
+	public void printD() {
+		int paths = getPathsD(); // get number of paths
+		System.out.println(this.nodes.size()+" "+paths);
+		for (Node n:this.nodes) {
+			for (Node neighbour:n.connectedNodes) {
+				System.out.println(n.id+" "+neighbour.id);
+			}
+		}
+		
+		
+	}
+
+	private int getPathsD() {
+		// TODO Auto-generated method stub
+		int paths = 0;
+		for (Node n:this.nodes) {
+			paths += n.connectedNodes.size();
+		}
+		return paths;
+	}
+
+	public void readDGFromScanner(Scanner sc) {
+		int nOfNodes = sc.nextInt();
+		int lines = sc.nextInt();
+		
+		for (int i=0;i<lines;i++) {
+			// read in the line which contains 2 node ids.
+			int id1 = sc.nextInt();
+			int id2 = sc.nextInt();
+			
+			
+			// create 2 nodes.
+			Node node1 = new Node(id1); 
+			Node node2 = new Node(id2);
+			
+			// if the created nodes are not included in the graph, then add them into the 
+			// graph
+			Node tmpNode = null;
+			tmpNode = findNode(node1);
+			if (tmpNode !=null ) { // we have alreay a node1
+				node1 = tmpNode;
+			} else { // we have never had node 1
+				this.nodes.add(node1);
+			}
+			
+			tmpNode = findNode(node2);
+			if (tmpNode !=null ) {
+				node2 = tmpNode;
+			} else {
+				this.nodes.add(node2);
+			}
+			
+			// connect the 2 nodes;
+			node1.addNeighbour(node2);
+			
 		}
 		
 	}
