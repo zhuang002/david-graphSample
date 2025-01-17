@@ -4,6 +4,43 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) {
+		
+		
+		//graphArraySample();
+		graphNodesSample();
+
+	}
+	
+	private static void graphNodesSample() {
+		// TODO Auto-generated method stub
+		Scanner sc = new Scanner(System.in);
+		GraphNodes graph1 = new GraphNodes();
+		graph1.readBGFromScanner(sc);
+		graph1.print();
+		
+		/*GraphNodes graph2 = new GraphNodes();
+		graph2.readDGFromScanner(sc);
+		graph2.print();
+		
+		GraphNodes graph3 = new GraphNodes();
+		graph3.readBGLFromScanner(sc);
+		graph3.print();|
+		
+		if (graph1.isConnected()) {
+			System.out.println("The graph is connected");
+		} else {
+			System.out.println("The graph is not conected");
+		}
+		
+		if (graph1.isTree()) {
+			System.out.println("The graph is a tree");
+		} else {
+			System.out.println("The graph is not a tree");
+		}*/
+		sc.close();
+	}
+
+	public static void graphArraySample() {
 		Scanner sc = new Scanner(System.in);
 		GraphArray graph1 = new GraphArray();
 		graph1.readBGFromScanner(sc);
@@ -28,7 +65,7 @@ public class Main {
 		} else {
 			System.out.println("The graph is not a tree");
 		}
-
+		sc.close();
 	}
 
 }
@@ -190,8 +227,114 @@ class GraphArray {
 			}
 		}
 		
-		
-		
 	}
 	
 }
+
+
+class Node {
+	int id; // the node id
+	ArrayList<Node> connectedNodes = new ArrayList<>(); // all the nodes connected to this node.
+	
+	public Node(int id) {
+		this.id = id;
+	}
+
+	// add a connected node(neighbour) to this node.
+	public void addNeighbour(Node neighbour) {
+		
+		if (!containsNeighbour(neighbour))
+			this.connectedNodes.add(neighbour);
+	}
+
+	// if the connected nodes already has a node as its neighbour.
+	private boolean containsNeighbour(Node neighbour) {
+		for (Node n:this.connectedNodes) {
+			if (n.id == neighbour.id) {
+				return true;
+			}
+		}
+		return false;
+	}
+}
+
+
+class GraphNodes {
+	ArrayList<Node> nodes = new ArrayList<>(); // all the nodes in the graph.
+
+	public void readBGFromScanner(Scanner sc) {
+		int nOfNodes = sc.nextInt();
+		int lines = sc.nextInt();
+		
+		for (int i=0;i<lines;i++) {
+			// read in the line which contains 2 node ids.
+			int id1 = sc.nextInt();
+			int id2 = sc.nextInt();
+			
+			
+			// create 2 nodes.
+			Node node1 = new Node(id1); 
+			Node node2 = new Node(id2);
+			
+			// if the created nodes are not included in the graph, then add them into the 
+			// graph
+			Node tmpNode = null;
+			tmpNode = findNode(node1);
+			if (tmpNode !=null ) { // we have alreay a node1
+				node1 = tmpNode;
+			} else { // we have never had node 1
+				this.nodes.add(node1);
+			}
+			
+			tmpNode = findNode(node2);
+			if (tmpNode !=null ) {
+				node2 = tmpNode;
+			} else {
+				this.nodes.add(node2);
+			}
+			
+			// connect the 2 nodes;
+			node1.addNeighbour(node2);
+			node2.addNeighbour(node1);
+		}
+		
+	}
+
+	// try to find the node in node list.
+	private Node findNode(Node node) {
+		for (Node n:this.nodes) {
+			if (n.id == node.id) {
+				return n;
+			}
+		}
+		return null;
+	}
+
+	public void print() {
+		int paths = getPaths(); // get number of paths
+		System.out.println(this.nodes.size()+" "+paths);
+		for (Node n:this.nodes) {
+			for (Node neighbour:n.connectedNodes) {
+				if (neighbour.id>n.id)
+					System.out.println(n.id+" "+neighbour.id);
+			}
+		}
+		
+	}
+	
+	
+
+	private int getPaths() {
+		int paths = 0;
+		for (Node n:this.nodes) {
+			paths += n.connectedNodes.size();
+		}
+		return paths/2; // because the count is duplicated, so we need to get half.
+	}
+
+	
+}
+
+
+
+
