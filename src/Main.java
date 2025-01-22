@@ -41,16 +41,40 @@ public class Main {
 		Node node1 = graph1.nodes.get(0);
 		Node node2 = graph1.nodes.get(graph1.nodes.size()-1);
 		
-		if (twoNodesAreConnectedDFS(node1,node2)) {
+		/*if (twoNodesAreConnectedDFS(node1,node2)) {
 			System.out.println("DFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are connected.");
 		} else {
 			System.out.println("DFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are not connected.");
-		}
-		
-		/*if (twoNodesAreConnectedBFS(node1, node2)) {
-			System.out.println("BFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are connected.");
 		}*/
+		
+		if (twoNodesAreConnectedBFS(node1, node2)) {
+			System.out.println("BFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are connected.");
+		} else {
+			System.out.println("BFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are not connected.");
+		}
 		sc.close();
+	}
+
+	private static boolean twoNodesAreConnectedBFS(Node node1, Node node2) {
+		if (node1 == node2) return true;
+		ArrayList<Node> passedNodes = new ArrayList<>();
+		ArrayList<Node> tobeProcessed = new ArrayList<>();
+		tobeProcessed.add(node1);
+		
+		while (!tobeProcessed.isEmpty()) {
+			Node current = tobeProcessed.get(0);
+			tobeProcessed.remove(0);
+			
+			for (Node n:current.connectedNodes) {
+				if (n == node2) return true;
+				if (passedNodes.contains(n)) continue;
+				if (tobeProcessed.contains(n)) continue;
+				tobeProcessed.add(n);
+			}
+			
+			passedNodes.add(current);
+		}
+		return false;
 	}
 
 	private static boolean twoNodesAreConnectedDFS(Node node1, Node node2) {
