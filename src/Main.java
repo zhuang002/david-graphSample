@@ -26,17 +26,17 @@ public class Main {
 		graph3.readBGLFromScanner(sc);
 		graph3.print();*/
 		
-		if (graph1.isConnected()) {
+		/*if (graph1.isConnected()) {
 			System.out.println("The graph is connected");
 		} else {
 			System.out.println("The graph is not conected");
-		}
+		}*/
 		
-		/*if (graph1.isTree()) {
+		if (graph1.isTree()) {
 			System.out.println("The graph is a tree");
 		} else {
 			System.out.println("The graph is not a tree");
-		}*/
+		}
 		sc.close();
 	}
 
@@ -297,6 +297,33 @@ class GraphNodes {
 			node1.addNeighbour(node2);
 			node2.addNeighbour(node1);
 		}
+		
+	}
+
+	public boolean isTree() {
+		if (!this.isConnected()) {
+			return false;
+		}
+		
+		ArrayList<Node> passedNodes = new ArrayList<>();
+		
+		Node startNode = this.nodes.get(0);
+		
+		return isTreeFrom(null, startNode, passedNodes);
+	}
+
+	private boolean isTreeFrom(Node from, Node startNode, ArrayList<Node> passedNodes) {
+		passedNodes.add(startNode);
+		for (Node n:startNode.connectedNodes) {
+			if (n==from) continue;
+			if (passedNodes.contains(n))
+				return false;
+			
+			if (!isTreeFrom(startNode, n, passedNodes)) {
+				return false;
+			}
+		}
+		return true;
 		
 	}
 
