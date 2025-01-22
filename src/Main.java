@@ -32,12 +32,43 @@ public class Main {
 			System.out.println("The graph is not conected");
 		}*/
 		
-		if (graph1.isTree()) {
+		/*if (graph1.isTree()) {
 			System.out.println("The graph is a tree");
 		} else {
 			System.out.println("The graph is not a tree");
+		}*/
+		
+		Node node1 = graph1.nodes.get(0);
+		Node node2 = graph1.nodes.get(graph1.nodes.size()-1);
+		
+		if (twoNodesAreConnectedDFS(node1,node2)) {
+			System.out.println("DFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are connected.");
+		} else {
+			System.out.println("DFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are not connected.");
 		}
+		
+		/*if (twoNodesAreConnectedBFS(node1, node2)) {
+			System.out.println("BFS: Node 0 and Node "+(graph1.nodes.size()-1) +" are connected.");
+		}*/
 		sc.close();
+	}
+
+	private static boolean twoNodesAreConnectedDFS(Node node1, Node node2) {
+		// TODO Auto-generated method stub
+		ArrayList<Node> passedNodes = new ArrayList<>();
+		return isConnectedTo(null, node1, node2, passedNodes);
+	}
+
+	private static boolean isConnectedTo(Node from, Node node1, Node node2, ArrayList<Node> passedNodes) {
+		if (node1 == node2) return true;
+		passedNodes.add(node1);
+		for (Node n:node1.connectedNodes) {
+			if (n==from) continue;
+			if (passedNodes.contains(n)) continue;
+			if (isConnectedTo(node1, n, node2, passedNodes)) 
+				return true;
+		}
+		return false;
 	}
 
 	public static void graphArraySample() {
@@ -313,6 +344,7 @@ class GraphNodes {
 	}
 
 	private boolean isTreeFrom(Node from, Node startNode, ArrayList<Node> passedNodes) {
+		// a dfs method to go through all nodes, using recursive method.
 		passedNodes.add(startNode);
 		for (Node n:startNode.connectedNodes) {
 			if (n==from) continue;
